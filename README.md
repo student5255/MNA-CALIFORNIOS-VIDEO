@@ -209,3 +209,125 @@ El objetivo final es, basado en el modelo entrenado, poder seleccionar automáti
 | **Coqui.ai**    | Texto a voz emocional, open source   | Medio-alto                | Sin video integrado        |
 | **D-ID Studio** | Video animado de rostro con voz      | Muy bueno para busto      | Sin cuerpo completo        |
 | **HeyGen**      | Avatares 3D con diálogo sincronizado | Muy realista              | Alto costo y branding fijo |
+
+<hr />
+
+## Avance 4 – Evaluación y Comparación de Modelos
+##### 25 de mayo de 2025
+
+### 📁 Contenido del repositorio
+- 📘 Libreta de Jupyter Notebook para el modelo base. [Avance4.19.ipynb](notebooks/Avance4.19.ipynb)
+
+#### Notas: 
+- Por cuestiones de privacidad con el autor, se ha decidido no adjuntar el contenido del libro y el guión en el repositorio público.
+- La libreta con la ingeniería de características requiere de un TOKEN de Hugging Face para poder ejecutar correctamente.
+
+### 🎯 Objetivo del avance
+
+En este avance, se construyeron y evaluaron **6 modelos de clasificación individual** para predecir las **emociones presentes en las escenas del guion “Los Californios”**. Los modelos implementados abarcaron algoritmos lineales, probabilísticos y métodos más complejos basados en árboles y distancias.
+
+La comparación se realizó con base en métricas clave:
+
+- **Accuracy**
+- **F1-macro**
+- **F1 ponderado**
+- **Tiempo de entrenamiento**
+
+Esto permitió evaluar de forma integral la idoneidad de cada modelo para el problema planteado.
+
+---
+
+### 📊 Resultados por modelo
+
+#### 🔸 XGBoost
+- **F1-macro:** 0.2156
+- **Accuracy:** 51.56%
+- **Tiempo de entrenamiento:** 4.27 s
+- ✅ Mejor desempeño general antes del ajuste.
+- ✅ Robusto y eficaz con relaciones complejas.
+- ❗ Costo computacional relativamente alto.
+
+#### 🔸 KNeighborsClassifier
+- **F1-macro:** 0.1639
+- **Accuracy:** 42.19%
+- **Tiempo de entrenamiento:** 0.005 s
+- ✅ Muy eficiente y rápido.
+- ✅ Buena interpretación de similitudes TF-IDF.
+- 🔁 Mejoró tras el ajuste fino (ver más abajo).
+
+### 🔸 Support Vector Classifier (SVC)
+- **F1-macro:** 0.1624
+- **Accuracy:** 60.94%
+- **Tiempo de entrenamiento:** 0.13 s
+- 🔸 Buen accuracy, pero bajo F1.
+- ❗ Sensible a hiperparámetros.
+
+#### 🔸 Random Forest
+- **F1-macro:** 0.1549
+- **Accuracy:** 59.38%
+- **Tiempo de entrenamiento:** 0.94 s
+- 🔸 Capacidad para relaciones no lineales.
+- ❗ Bajo rendimiento comparativo.
+
+#### 🔸 Multinomial Naive Bayes (MNB)
+- **F1-macro:** 0.1262
+- **Accuracy:** 60.94%
+- **Tiempo de entrenamiento:** 0.003 s
+- ✅ Ultra rápido.
+- ❗ Pobre en relaciones semánticas complejas.
+
+#### 🔸 Logistic Regression
+- **F1-macro:** 0.1262
+- **Accuracy:** 60.94%
+- **Tiempo de entrenamiento:** 1.65 s
+- 🔸 Fácil de interpretar.
+- ❗ Superado en rendimiento por otros modelos.
+
+---
+
+### 🧪 Ajuste de modelos seleccionados
+
+#### ✳️ XGBoost (ajustado)
+- **F1-macro:** 0.1977 (ligera caída)
+- **Mejores hiperparámetros:**
+  - `learning_rate`: 0.01
+  - `max_depth`: 10
+  - `n_estimators`: 50
+  - `subsample`: 1
+- ❗ No logró mejorar su score original.
+
+#### ✳️ KNeighborsClassifier (ajustado)
+- **F1-macro:** **0.2426** ✅
+- **Mejores hiperparámetros:**
+  - `n_neighbors`: 7
+  - `weights`: 'distance'
+  - `metric`: 'euclidean'
+- ✅ Mayor mejora tras ajuste.
+- ✅ Mejor modelo final.
+
+---
+
+### 🏁 Modelo final seleccionado: `KNeighborsClassifier` (ajustado)
+
+#### ✅ Justificación técnica
+- Mayor F1-macro tras el ajuste.
+- Bajo tiempo de entrenamiento.
+- Capacidad de interpretar relaciones semánticas vía TF-IDF.
+
+#### 🎬 Justificación narrativa
+- Favorece la agrupación de escenas por emoción similar.
+- Ideal para preselección narrativa en la construcción del tráiler.
+- Balance entre eficiencia, rendimiento y claridad interpretativa.
+
+---
+
+### ✅ Conclusión
+
+La evaluación y comparación de los modelos permitieron seleccionar al **KNeighborsClassifier ajustado** como modelo final para predecir emociones narrativas en escenas.
+
+Esta decisión se fundamenta tanto en métricas de desempeño como en:
+- Su capacidad para capturar relaciones semánticas clave.
+- Su tiempo de entrenamiento mínimo.
+- Su alineación con los objetivos creativos del proyecto.
+
+El modelo final está preparado para integrarse en la fase de automatización de selección de escenas para el tráiler.
