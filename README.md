@@ -331,3 +331,80 @@ Esta decisión se fundamenta tanto en métricas de desempeño como en:
 - Su alineación con los objetivos creativos del proyecto.
 
 El modelo final está preparado para integrarse en la fase de automatización de selección de escenas para el tráiler.
+
+<hr>
+
+## Avance 5: Modelo Final
+##### 1 de junio de 2025
+
+### 📁 Contenido del repositorio
+- 📘 Libreta de Jupyter Notebook para el modelo base. [Avance5.19.ipynb](notebooks/Avance5.19.ipynb)
+
+#### Notas: 
+- Por cuestiones de privacidad con el autor, se ha decidido no adjuntar el contenido del libro y el guión en el repositorio público.
+- La libreta con la ingeniería de características requiere de un TOKEN de Hugging Face para poder ejecutar correctamente.
+
+### ✅ Objetivo
+Seleccionar y evaluar modelos de ensamble para mejorar la predicción de emociones en escenas del guion de *Los Californios*. El modelo final elegido deberá ser capaz de integrarse con herramientas de generación audiovisual.
+
+---
+
+### 📊 Comparativa de modelos
+
+| Modelo          | Tipo Ensamble | F1 Macro | Accuracy | Tiempo (s) |
+|-----------------|---------------|----------|----------|------------|
+| **XGBoost**     | Homogéneo     | **0.255** | 0.562    | 7.70       |
+| Random Forest   | Homogéneo     | 0.162     | 0.609    | 2.12       |
+| Voting          | Heterogéneo   | 0.153     | 0.593    | 7.29       |
+| Stacking        | Heterogéneo   | 0.126     | 0.609    | 29.70      |
+
+---
+
+### 🏆 Modelo final seleccionado: `XGBoost`
+
+#### 📊 Justificación:
+- ✅ Mayor F1 Macro entre todos los modelos evaluados.
+- ✅ Tiempo de entrenamiento razonable.
+- ✅ Posibilidad de interpretar importancia de características.
+- ✅ Compatible con flujo de generación audiovisual.
+
+---
+
+### 🔍 Visualizaciones del modelo final
+
+#### 1. 👉 Matriz de confusión
+- Muestra el desempeño por clase.
+- Ayuda a identificar clases ignoradas o confusas.
+
+#### 2. 🌐 Curvas ROC por clase
+- AUC por clase.
+- Buenas clases objetivo: aquellas con AUC > 0.6.
+- ⚠️ **Nota**: Debido a una incompatibilidad técnica de `XGBoost` con `OneVsRestClassifier`, las curvas ROC fueron generadas utilizando `LogisticRegression` solo con fines visuales. Esto no afecta la elección del modelo final.
+- ✅ **Corrección aplicada**: Se detectó que `label_binarize()` generaba solo ceros por un mal uso de clases string. Ahora se usa:
+
+```python
+# Corrección para binarización efectiva
+y_test_bin = label_binarize(y_test, classes=label_encoder.transform(label_encoder.classes_))
+```
+Esto garantiza la generación adecuada de las curvas ROC por clase.
+
+#### 3. ✨ Importancia de características (palabras)
+- Permite interpretar qué términos impactan más la predicción.
+
+---
+
+### 🎨 Conclusión
+
+En colaboración con el Equipo #20 - Los Californios II, se ha elegido el uso de las herramientas de Google AI para continuar con la generación final del trailer.
+
+La salida del Equipo #20 serán pequeños guiones que sintetizan las escenas. A las cuales se les aplicará la predicción de emociones y se integrará esa emoción en la descripción del guión para la escena. Una vez completado el *prompt* se utilizará para generar los clips individuales utilizando las herramientas generativas de Google AI.
+
+#### 🔹 Flujo sugerido
+1. Equipo #20 - Los Californios II entregará la colección de pequeños guiones en formato Gemini.
+2. Equipo #19 - Los Californios I aplicará la predicción de emociones sobre estos guiones y se integrará a la descripción de la escena.
+3. Una vez completado el *prompt* se utilizará Veo 2 y Veo 3 para la generación de pequeños clips (5 a 10 segundos).
+4. Por cuestiones de presupuesto, es posible que se utilice una edición manual para integrar el tráiler final.
+
+#### Notas: 
+- Por cuestiones de tiempo y presupuesto, los integrantes de ambos equipos generarán clips para el trailer final.
+- Para esta primera iteración se hará uso del mes gratuito que ofrece Google, pero que tiene restricciones, por lo que se someterá a discusión si es necesario hacer una inversión para una siguiente iteración donde se pueda hacer un uso más extenso de Veo 3.
