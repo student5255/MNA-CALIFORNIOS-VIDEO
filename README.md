@@ -408,3 +408,42 @@ La salida del Equipo #20 serán pequeños guiones que sintetizan las escenas. A 
 #### Notas: 
 - Por cuestiones de tiempo y presupuesto, los integrantes de ambos equipos generarán clips para el trailer final.
 - Para esta primera iteración se hará uso del mes gratuito que ofrece Google, pero que tiene restricciones, por lo que se someterá a discusión si es necesario hacer una inversión para una siguiente iteración donde se pueda hacer un uso más extenso de Veo 3.
+
+<hr />
+
+## Avance 6: Conclusiones Clave
+##### 8 de junio de 2025
+
+### 📁 Contenido del repositorio
+- 📘 Libreta de Jupyter Notebook con la integración de todos los avances. [Avance6.19.ipynb](notebooks/Avance6.19.ipynb)
+
+#### Notas: 
+- Por cuestiones de privacidad con el autor, se ha decidido no adjuntar el contenido del libro, el guión y las escenas proporcionadas por el equipo *Los Californios II - LLM* en el repositorio público.
+- La libreta con la ingeniería de características requiere de un TOKEN de *HuggingFace* para poder ejecutar correctamente.
+
+### ✅ Objetivo
+Integra todos los avances anteriores para predecir emociones narrativas en escenas del guion *Los Californios*, es importante mencionar que la herramienta de Inteligencia Artificial Generativa seleccionada fue *Veo 3*, la cual requiere una estructura específica para los *prompts*. El equipo de LLM nos ha entregado un documento con los *prompts* por escena respetando el formato solicitado, por lo que fue necesario reescribir toda la parte de análisis y exploración de datos para usar el nuevo formato como entrada e incorporarlo en el *dataframe* que se utiliza a lo largo del resto del *notebook*.
+
+---
+
+### 🧠 Conclusiones
+
+#### 🔄 Cambios en el análisis exploratorio (EDA)
+- Se actualizó el método de lectura del archivo `LosCaliforniosScenes.txt`, que ahora tiene un nuevo formato requerido por la herramienta **Veo 3**.
+- Las escenas ya no están delimitadas por saltos de línea, sino por encabezados del tipo `Escena N`, por lo que se diseñó un nuevo algoritmo de segmentación robusto que preserva cada escena completa, incluso si su contenido es mínimo o incluye instrucciones como `"No Hacer"`.
+- Se eliminaron posibles errores de concatenación no deseada entre escenas consecutivas.
+
+#### 🤖 Comparativa de modelos: Clásicos vs. LLM especializado
+- Adicional a los clasificadores tradicionales, se comparó contra un modelo especializado de HuggingFace:  
+  `cardiffnlp/twitter-roberta-base-sentiment`
+- Este modelo fue utilizado mediante la API `pipeline("text-classification")`, obteniendo predicciones de emoción directamente desde los textos de las escenas.
+- Aunque el modelo está optimizado para análisis de sentimiento (positive, neutral, negative), se mapeó su salida a emociones adaptadas al contexto narrativo
+
+#### 📝 Generación del archivo con emociones integradas
+- Ahora al finalizar la ejecuación el notebook crea el archivo `LosCaliforniosScenesEmotions.txt`, que contiene **exactamente el mismo contenido** que el archivo original de escenas.
+- A cada escena se le añadió una línea final con la emoción detectada por el modelo, siguiendo el formato:
+
+  ```text
+  This scene should generate, in the viewer, the emotion: [EMOCIÓN]
+
+---
